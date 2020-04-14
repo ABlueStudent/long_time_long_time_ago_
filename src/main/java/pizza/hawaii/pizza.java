@@ -1,8 +1,7 @@
 package pizza.hawaii;
 
-import opennlp.tools.stemmer.PorterStemmer;
-import opennlp.tools.stemmer.Stemmer;
 import pizza.hawaii.*;
+import org.tartarus.snowball.ext.englishStemmer;
 
 import java.io.*;
 import java.util.Comparator;
@@ -16,15 +15,20 @@ public class pizza {
         FileReader fileReader = new FileReader(args[0]);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         int line_count = 0;
-        //把東西放進Map :D *一個叫做只放入字根的功能順便做了進來
-        //PorterStemmer porterStemmer = new PorterStemmer();
 
+        //把東西放進Map :D *一個叫做只放入字根的功能順便做了進來
+        englishStemmer stemmer = new englishStemmer();
         while (bufferedReader.ready()) {
             line_count++;
 
             //上帝為你關一扇Door，會順便幫你關Windows
             for (String str : pineapple.magic(bufferedReader.readLine())) {
-                //str = porterStemmer.stem(str);
+
+                stemmer.setCurrent(str);
+                if (stemmer.stem()) {
+                    str = stemmer.getCurrent();
+                }
+
                 if (word_count.containsKey(str)) {
                     int tmp = word_count.get(str);
                     word_count.put(str, ++tmp);
