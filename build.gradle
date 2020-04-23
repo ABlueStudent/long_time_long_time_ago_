@@ -22,6 +22,5 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
-compileJava {
-    options.encoding = 'UTF-8'
+compileJava {    options.encoding = 'UTF-8'
 }

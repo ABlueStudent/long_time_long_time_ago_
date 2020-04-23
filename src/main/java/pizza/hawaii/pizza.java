@@ -1,39 +1,43 @@
 package pizza.hawaii;
 
-import pizza.hawaii.*;
 import org.tartarus.snowball.ext.englishStemmer;
 
 import java.io.*;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class pizza {
     public static void main(String[] args) throws IOException {
         HashMap<String, Integer> word_count = new HashMap<>();
-        FileReader fileReader = new FileReader(args[0]);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        int line_count = 0;
 
         //把東西放進Map :D *一個叫做只放入字根的功能順便做了進來
+        File file = new File(args[0]);
+        List<String> buffered_content = new ArrayList<String>();
         englishStemmer stemmer = new englishStemmer();
-        while (bufferedReader.ready()) {
-            line_count++;
+        if (file.isDirectory()) {
+            for (File fileEntry: Objects.requireNonNull(file.listFiles())) {
+                if (!fileEntry.isDirectory()) {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(fileEntry.getPath()));
+                    while(bufferedReader.ready()) buffered_content.add(bufferedReader.readLine());
+                }
+            }
+        }else {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file.getPath()));
+            while (bufferedReader.ready()) buffered_content.add(bufferedReader.readLine());
+        }
 
-            //上帝為你關一扇Door，會順便幫你關Windows
-            for (String str : pineapple.magic(bufferedReader.readLine())) {
-
-                stemmer.setCurrent(str);
+        //上帝為你關一扇Door，會順便幫你關Windows
+        for (String str: buffered_content) {
+            for (String buf: pineapple.magic(str)) {
+                stemmer.setCurrent(buf);
                 if (stemmer.stem()) {
-                    str = stemmer.getCurrent();
+                    buf = stemmer.getCurrent();
                 }
 
-                if (word_count.containsKey(str)) {
-                    int tmp = word_count.get(str);
-                    word_count.put(str, ++tmp);
+                if (word_count.containsKey(buf)) {
+                    int tmp = word_count.get(buf);
+                    word_count.put(buf, ++tmp);
                 } else {
-                    if (str.length() > 1 && !str.matches("-?\\d+")) word_count.put(str, 1);
+                    if (buf.length() > 1 && !buf.matches("-?\\d+")) word_count.put(buf, 1);
                 }
             }
         }
@@ -69,6 +73,6 @@ public class pizza {
         writer.close();
 
         //總共讀了幾行
-        System.out.printf("總共讀取:%d行", line_count);
+        System.out.printf("總共讀取:%d行", buffered_content.size());
     }
 }
